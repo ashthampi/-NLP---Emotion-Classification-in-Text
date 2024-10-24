@@ -1,0 +1,49 @@
+import pandas as pd
+import re
+
+data = pd.read_csv('nlp_dataset.csv')
+
+def CT(text):
+    text = text.lower()
+    text = re.sub(r'[^\w\s]', '', text)
+    text = re.sub(r'\d+', '', text)
+    text = text.strip()
+    return text
+
+data['ACT'] = data['Comment'].apply(CT)
+print(data[['Comment', 'ACT']].head())
+from sklearn.feature_extraction.text import TfidfVectorizer
+
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(data['ACT'])
+print(X.shape)
+
+from sklearn.model_selection import train_test_split
+​
+y = data['Emotion']
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+NBM
+from sklearn.naive_bayes import MultinomialNB
+​
+NBM = MultinomialNB()
+NBM.fit(X_train, y_train)
+
+from sklearn.svm import SVC
+
+SVMM = SVC()
+SVMM.fit(X_train, y_train) 
+
+YPNB = NBM.predict(X_test)
+YPSVM = SVMM.predict(X_test)
+
+from sklearn.metrics import accuracy_score, f1_score
+
+ANB = accuracy_score(y_test, YPNB)
+F1NB = f1_score(y_test, YPNB, average='weighted')
+
+ASVM = accuracy_score(y_test, YPSVM)
+F1SVM = f1_score(y_test, YPSVM, average='weighted')
+
+print(f"Naive Bayes - Accuracy: {ANB}, F1-Score: {F1NB}") 
+print(f"SVM - Accuracy: {ASVM}, F1-Score: {F1SVM}") 
+
